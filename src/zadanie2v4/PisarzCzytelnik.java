@@ -9,16 +9,17 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class PisarzCzytelnik {
 
     public PisarzCzytelnik(int n, int lp, int lcz){
-        CopyOnWriteArrayList<String> przeczytane = new CopyOnWriteArrayList<>();
+        int pojemnoscCz = lp*lcz;
+        BlockingQueue<String> przeczytane = new ArrayBlockingQueue<>(pojemnoscCz);
         AtomicInteger l = new AtomicInteger(0);
-        BlockingQueue<String> abq = new ArrayBlockingQueue<>(n);
+        BlockingQueue<Integer> abq = new ArrayBlockingQueue<>(n);
         for(int i = 0; i < lcz; i++) {
-            Czytelnik c = new ProstyCzytelnik(abq, n, przeczytane);
+            Czytelnik c = new ProstyCzytelnik(abq,pojemnoscCz, przeczytane);
 
             new Thread(c, "Czytelnik numer: " + (i+1)).start();
         }
         for(int b = 0; b < lp; b++) {
-            Pisarz p = new ProstyPisarz(abq, n, l);
+            Pisarz p = new ProstyPisarz(abq,n, l);
             new Thread(p, "Pisarz numer: " + (b + 1)).start();
         }
     }

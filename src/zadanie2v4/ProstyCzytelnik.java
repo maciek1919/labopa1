@@ -7,31 +7,40 @@ import java.util.concurrent.CopyOnWriteArrayList;
 //stworzyc klase ksiazke z dwoma polami nienapisana, napisana + dwie kolejki ksiazki napisane i nienapisane
 public class ProstyCzytelnik implements Czytelnik {
 
-    private BlockingQueue<String> bq = null;
-    private final int a;
-    private final CopyOnWriteArrayList<String> przeczytane;
-    public ProstyCzytelnik(BlockingQueue<String> bq, int a, CopyOnWriteArrayList<String> przeczytane) {
+    private BlockingQueue<Integer> bq = null;
+    private BlockingQueue<String> przeczytane = null;
+    private int pojemnosc;
+    public ProstyCzytelnik(BlockingQueue<Integer> bq,int pojemnosc, BlockingQueue<String> przeczytane) {
         this.bq = bq;
-        this.a = a;
         this.przeczytane = przeczytane;
+        this.pojemnosc = pojemnosc;
     }
 
     @Override
     public void run() {
-        for(int i = przeczytane.size(); i < a; i ++){
-            czytaj();
+            while(przeczytane.size() < pojemnosc){
+                czytaj();
         }
     }
 
     @Override
     public void czytaj() {
         try {
-            // Thread.yield();
-            sleeep(2000);
-            String s = bq.take();
-            bq.add(s);
-            przeczytane.add(s);
-        System.out.println("Przeczytano [" + przeczytane.get(przeczytane.size()-1) + "] przez czytelnika: " + Thread.currentThread().getName());
+            sleeep(1000);
+            Thread.yield();
+            int a = bq.take();
+            System.out.println("sprawdzanie ksiazki nr: " + a + "przez czytelnika: "+ Thread.currentThread().getName());
+            synchronized (bq){
+                String abc = Thread.currentThread().getName() + a;
+                if(!przeczytane.contains(abc)) {
+                    String s = "Przeczytano [" + a + "] przez czytelnika: " + Thread.currentThread().getName();
+                    przeczytane.put(abc);
+                    System.out.println(s);
+                }
+                bq.put(a);
+
+
+            }
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
