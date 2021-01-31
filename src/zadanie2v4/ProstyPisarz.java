@@ -21,12 +21,12 @@ public class ProstyPisarz implements Pisarz{
     @Override
     public void pisz(){
         try {
-            int s = i.get();
+            int book = i.get();
             sleeep(1000);
 
             synchronized (bq) {
-                bq.put(s);
-                System.out.println("Napisano: [ książke numer: " + s + "] autor: " + Thread.currentThread().getName());
+                bq.put(book);
+                System.out.println("Napisano: [ książke numer: " + book + "] autor: " + Thread.currentThread().getName());
             }
         }catch (InterruptedException e){
             e.printStackTrace();
